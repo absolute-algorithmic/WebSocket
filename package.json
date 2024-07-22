@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@types/ws": "^8.5.11",
+    "ws": "^8.18.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js"
+  }
+}
