@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 import { SensorCollector, SystemInfoCollector } from "./collector";
-
+import fs from "fs";
 const PORT = process.env.PORT || 8080;
 
 const wss = new WebSocket.Server({ port: Number(PORT) });
@@ -40,7 +40,10 @@ wss.on("connection", (ws: WebSocket) => {
         console.log("Unknown message type received");
       }
 
-      console.log("Received message: ", data);
+      // Save the data to a file "data.json" for debugging purposes
+      fs.writeFileSync("./collector/data.json", JSON.stringify(data, null, 2));
+      
+     // console.log("Received message: ", data);
     } catch (error) {
       console.error("Error parsing JSON: ", error);
     }
