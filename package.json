@@ -5,8 +5,8 @@
     "ws": "^8.18.0"
   },
   "scripts": {
-	"build": "tsc",
-	"clean": "tsc --build --clean",
+    "build": "tsc",
+    "clean": "tsc --build --clean",
     "start": "tsc --build && node dist/index.js"
   }
 }
