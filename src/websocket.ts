@@ -11,6 +11,12 @@ wss.on("connection", (ws: WebSocket) => {
     const messageString = Buffer.isBuffer(message)
       ? message.toString()
       : message;
+
+    if (!messageString || messageString === "") {
+      console.log("Empty message received");
+      return;
+    }
+
     console.log("Message received: ", messageString);
     ws.send("Hello!");
   });
