@@ -16,4 +16,4 @@ function SensorCollector(data: any) {
   console.log("SensorCollector", data);
 }
 
-export { SystemInfoCollector, SensorCollector };
+export { SystemInfoCollector, SensorCollector, SystemInfoStore, SensorDataStore };

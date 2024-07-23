@@ -5,27 +5,45 @@ const PORT = process.env.PORT || 8080;
 
 const wss = new WebSocket.Server({ port: Number(PORT) });
 
+const messageHandler: { [key: string]: (data: any) => void } = {
+  systemInfo: SystemInfoCollector,
+  sensor: SensorCollector,
+};
+
 wss.on("connection", (ws: WebSocket) => {
   console.log("New connection established");
 
   ws.on("message", (message: WebSocket.Data) => {
-    const messageString = Buffer.isBuffer(message)
-      ? message.toString()
-      : message;
+    let messageString: string;
+
+    if (typeof message === "string") {
+      messageString = message;
+    } else if (Buffer.isBuffer(message)) {
+      messageString = message.toString();
+    } else {
+      console.log("Invalid message type: ", typeof message);
+      return;
+    }
 
     if (!messageString || messageString === "") {
       console.log("Empty message received");
       return;
     }
+    try {
+      const data = JSON.parse(messageString);
 
-    // SystemInfoCollector
-    SystemInfoCollector(messageString);
+      const handler = messageHandler[data.messageType];
 
-    // SensorCollector
-    SensorCollector(messageString);
+      if (handler) {
+        handler(data);
+      } else {
+        console.log("Unknown message type received");
+      }
 
-    console.log("Received message: ", messageString);
-    ws.send(`Received: ${messageString}`);
+      console.log("Received message: ", data);
+    } catch (error) {
+      console.error("Error parsing JSON: ", error);
+    }
   });
 
   // https://datatracker.ietf.org/doc/html/rfc6455
