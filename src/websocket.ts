@@ -23,7 +23,11 @@ wss.on("connection", (ws: WebSocket) => {
 
   // https://datatracker.ietf.org/doc/html/rfc6455
   ws.on("close", (code: number, reason: Buffer) => {
-    console.log(`Connection closed with code ${code} and reason ${reason}`);
+    console.log(
+      `Connection closed with code ${code} and reason ${
+        reason || "No reason provided"
+      }`
+    );
   });
 
   ws.on("error", (error: Error) => {
