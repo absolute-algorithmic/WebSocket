@@ -1,4 +1,5 @@
 import WebSocket from "ws";
+import { SensorCollector, SystemInfoCollector } from "./collector";
 
 const PORT = process.env.PORT || 8080;
 
@@ -17,8 +18,14 @@ wss.on("connection", (ws: WebSocket) => {
       return;
     }
 
-    console.log("Message received: ", messageString);
-    ws.send("Hello!");
+    // SystemInfoCollector
+    SystemInfoCollector(messageString);
+
+    // SensorCollector
+    SensorCollector(messageString);
+
+    console.log("Received message: ", messageString);
+    ws.send(`Received: ${messageString}`);
   });
 
   // https://datatracker.ietf.org/doc/html/rfc6455
