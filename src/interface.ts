@@ -39,7 +39,7 @@ export interface SystemInfo {
   sensorList: string[];
 }
 
-export interface SensorData {
+export interface Sensor {
   accuracy: number;
   messageType: string;
   timestamp: number;

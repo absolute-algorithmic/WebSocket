@@ -1,8 +1,8 @@
-import { SystemInfo, SensorData } from "./interface";
-
-const SensorDataStore: SensorData[] = [];
+import { SystemInfo, Sensor } from "./interface";
 
 const SystemInfoStore: SystemInfo[] = [];
+
+const SensorDataStore: Sensor[] = [];
 
 function SystemInfoCollector(data: any) {
   SystemInfoStore.push(data);
@@ -16,4 +16,9 @@ function SensorCollector(data: any) {
   console.log("SensorCollector", data);
 }
 
-export { SystemInfoCollector, SensorCollector, SystemInfoStore, SensorDataStore };
+export {
+  SystemInfoCollector,
+  SensorCollector,
+  SystemInfoStore,
+  SensorDataStore,
+};
