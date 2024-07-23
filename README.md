@@ -24,9 +24,9 @@ This WebSocket server (KannaSocket) is inspired by the library [AndroidSensorCol
   * [Incremental](https://developer.android.com/reference/android/os/Build.VERSION#INCREMENTAL)
   * [Sdk_int](https://developer.android.com/reference/android/os/Build.VERSION#SDK_INT)
 - Screen
-  * [width](https://developer.android.com/reference/android/util/DisplayMetrics#widthPixels)
-  * [height](https://developer.android.com/reference/android/util/DisplayMetrics#heightPixels)
-  * [pixel density](https://developer.android.com/reference/android/util/DisplayMetrics#density)
+  * [Width](https://developer.android.com/reference/android/util/DisplayMetrics#widthPixels)
+  * [Height](https://developer.android.com/reference/android/util/DisplayMetrics#heightPixels)
+  * [Pixel density](https://developer.android.com/reference/android/util/DisplayMetrics#density)
 - List of available sensors
 - Performance micro-benchmarks (e.g. square root of a number ran n times)
 - SHA-256 hash of [ANDROID_ID](https://developer.android.com/reference/android/provider/Settings.Secure#ANDROID_ID) and [Build.FINGERPRINT](https://developer.android.com/reference/android/os/Build#FINGERPRINT) combined
