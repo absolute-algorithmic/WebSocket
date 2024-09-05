@@ -13,53 +13,58 @@ const messageHandler: { [key: string]: (data: any) => void } = {
 wss.on("connection", (ws: WebSocket) => {
   console.log("New connection established");
 
+  let invalidMessages = 0;
+
   ws.on("message", (message: WebSocket.Data) => {
-    let messageString: string;
-
-    if (typeof message === "string") {
-      messageString = message;
-    } else if (Buffer.isBuffer(message)) {
-      messageString = message.toString();
-    } else {
-      console.log("Invalid message type: ", typeof message);
-      return;
-    }
-
-    if (!messageString || messageString === "") {
-      console.log("Empty message received");
-      return;
-    }
     try {
+      let messageString = typeof message === "string" ? message : message.toString();
+
+      if (!messageString) throw new Error("Empty message received");
+
       const data = JSON.parse(messageString);
+
+      if (!data.messageType || typeof data.messageType !== "string") {
+        ws.send(JSON.stringify({ error: "Invalid data format: 'messageType' is required" }));
+        return;
+      }
 
       const handler = messageHandler[data.messageType];
 
-      if (handler) {
-        handler(data);
-      } else {
-        console.log("Unknown message type received");
+      if (!handler) {
+        invalidMessages++;
+        throw new Error(`Unknown message type: ${data.messageType}`);
       }
 
-      // Save the data to a file "data.json" for debugging purposes
-      fs.writeFileSync("./collector/data.json", JSON.stringify(data, null, 2));
-      
-     // console.log("Received message: ", data);
+      invalidMessages = 0;
+      handler(data);
+
+      fs.writeFile("./collector/data.json", JSON.stringify(data, null, 2), (err) => {
+        if (err) {
+          console.error("Error writing to file: ", err);
+        }
+      });
+
     } catch (error) {
-      console.error("Error parsing JSON: ", error);
+      console.error("Error handling message: ", (error as Error).message);
+      ws.send(JSON.stringify({ error: (error as Error).message }));
+
+      if (invalidMessages >= 3) {
+        console.log("Too many invalid messages, closing connection");
+        ws.close(1003, "Too many invalid messages");
+      }
     }
   });
 
-  // https://datatracker.ietf.org/doc/html/rfc6455
   ws.on("close", (code: number, reason: Buffer) => {
     console.log(
       `Connection closed with code ${code} and reason ${
-        reason || "No reason provided"
+        reason.toString() || "No reason provided"
       }`
     );
   });
 
   ws.on("error", (error: Error) => {
-    console.log("Error: ", error);
+    console.error("Error: ", error);
   });
 });
 
