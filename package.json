@@ -8,5 +8,9 @@
     "build": "tsc",
     "clean": "tsc --build --clean",
     "start": "tsc --build && node dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.4",
+    "typescript": "^5.5.4"
   }
 }

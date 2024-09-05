@@ -1,8 +1,5 @@
 import WebSocket from "ws";
-import { SensorCollector, SystemInfoCollector } from "./collector";
-
-import fs from "fs/promises";
-import path from "path";
+import { SensorCollector, SystemInfoCollector, finalizeAndWriteToFile } from "./collector";
 
 const PORT = Number(process.env.PORT) || 8080;
 
@@ -17,7 +14,7 @@ const messageHandler: { [key: string]: (data: any) => void } = {
 wss.on("connection", (ws: WebSocket) => {
   console.log("New connection established");
 
-  ws.on("message", (message: WebSocket.Data) => {
+  ws.on("message", (message: WebSocket.Data) => {    
     const messageString = Buffer.isBuffer(message) ? message.toString() : message;
 
     if (typeof messageString !== "string" || !messageString.trim()) {
@@ -27,6 +24,8 @@ wss.on("connection", (ws: WebSocket) => {
 
     try {
       const data = JSON.parse(messageString);
+      console.log(data);
+
       const handler = messageHandler[data.messageType];
       if (handler) {
         handler(data);
@@ -41,6 +40,7 @@ wss.on("connection", (ws: WebSocket) => {
 
   ws.on("close", (code: number, reason: Buffer) => {
     console.log(`Connection closed with code ${code}`);
+    finalizeAndWriteToFile();
   });
 
   ws.on("error", (error: Error) => {

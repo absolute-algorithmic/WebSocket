@@ -41,6 +41,7 @@ export interface SystemInfo {
 
 export interface Sensor {
   accuracy: number;
+  id: string;
   messageType: string;
   timestamp: number;
   type: number;
