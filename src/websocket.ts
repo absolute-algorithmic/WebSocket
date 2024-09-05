@@ -41,7 +41,11 @@ wss.on("connection", (ws: WebSocket) => {
       }
 
       // Save the data to a file "data.json" for debugging purposes
-      fs.writeFileSync("./collector/data.json", JSON.stringify(data, null, 2));
+      fs.writeFile("./collector/data.json", JSON.stringify(data, null, 2), (err) => {
+        if (err) {
+          console.error("Error writing to file: ", err);
+        }
+      });
       
      // console.log("Received message: ", data);
     } catch (error) {
