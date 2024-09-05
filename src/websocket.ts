@@ -1,69 +1,50 @@
 import WebSocket from "ws";
 import { SensorCollector, SystemInfoCollector } from "./collector";
-import fs from "fs";
-const PORT = process.env.PORT || 8080;
 
-const wss = new WebSocket.Server({ port: Number(PORT) });
+import fs from "fs/promises";
+import path from "path";
+
+const PORT = Number(process.env.PORT) || 8080;
+
+const wss = new WebSocket.Server({ port: PORT });
 
 const messageHandler: { [key: string]: (data: any) => void } = {
   systemInfo: SystemInfoCollector,
   sensor: SensorCollector,
 };
 
+
 wss.on("connection", (ws: WebSocket) => {
   console.log("New connection established");
 
   ws.on("message", (message: WebSocket.Data) => {
-    let messageString: string;
+    const messageString = Buffer.isBuffer(message) ? message.toString() : message;
 
-    if (typeof message === "string") {
-      messageString = message;
-    } else if (Buffer.isBuffer(message)) {
-      messageString = message.toString();
-    } else {
-      console.log("Invalid message type: ", typeof message);
+    if (typeof messageString !== "string" || !messageString.trim()) {
+      console.log("Invalid or empty message received");
       return;
     }
 
-    if (!messageString || messageString === "") {
-      console.log("Empty message received");
-      return;
-    }
     try {
       const data = JSON.parse(messageString);
-
       const handler = messageHandler[data.messageType];
-
       if (handler) {
         handler(data);
       } else {
-        console.log("Unknown message type received");
+        console.log("Unknown message type received: ", data.messageType);
       }
 
-      // Save the data to a file "data.json" for debugging purposes
-      fs.writeFile("./collector/data.json", JSON.stringify(data, null, 2), (err) => {
-        if (err) {
-          console.error("Error writing to file: ", err);
-        }
-      });
-      
-     // console.log("Received message: ", data);
     } catch (error) {
       console.error("Error parsing JSON: ", error);
     }
   });
 
-  // https://datatracker.ietf.org/doc/html/rfc6455
   ws.on("close", (code: number, reason: Buffer) => {
-    console.log(
-      `Connection closed with code ${code} and reason ${
-        reason || "No reason provided"
-      }`
-    );
+    console.log(`Connection closed with code ${code}`);
   });
 
   ws.on("error", (error: Error) => {
-    console.log("Error: ", error);
+    console.error("WebSocket error: ", error);
   });
 });
 
